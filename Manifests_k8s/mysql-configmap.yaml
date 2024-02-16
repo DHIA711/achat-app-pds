@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-cm
+  namespace: achat-app
+
+data:
+ db-name: achatdb
+ db-host: mysql-service
+ 
+
+

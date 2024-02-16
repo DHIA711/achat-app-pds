@@ -1,0 +1,75 @@
+# Docker Compose 
+version: '3.7'
+
+# Define services
+services:
+  # App backend service
+  achat_back:
+    image: dockerdockerdhia/achat_back_dev
+    ports:
+      - "8089:8089" 
+    container_name: achat_back_cont
+    restart: always
+    depends_on:
+      - db 
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/achatdb?useSSL=false&serverTimezone=UTC&useLegacyDatetimeCode=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: sesame
+      SPRING_DATASOURCE_PASSWORD: sesame@12ere
+    networks:
+      - achat_app
+     
+
+  # Frontend Service 
+  achat_front:
+    image: dockerdockerdhia/achat_front_dev
+    container_name: achat_front_cont
+    ports:
+      - "8088:80" 
+    restart: always
+    depends_on:
+      - achat_back
+    networks:
+      - achat_app
+
+  # Database Service (Mysql)
+  db:
+    image: mysql:latest
+    container_name: achat_bd_cont
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_achat_data:/var/lib/mysql 
+    restart: always
+    environment:
+      MYSQL_DATABASE: achatdb
+      MYSQL_USER: sesame
+      MYSQL_PASSWORD: sesame@12ere
+      MYSQL_ROOT_PASSWORD: root
+    networks:
+      - achat_app
+
+  # Database Service (Mysql)
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: achat_pmadmin_cont
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - 8086:80
+    environment:
+      - PMA_ARBITRARY=1
+    networks:
+      - achat_app
+
+# Volumes to be created to persist data  
+volumes:
+  db_achat_data:
+
+# Networks to be created to facilitate communication between containers
+networks:
+  achat_app:
+  
+
+

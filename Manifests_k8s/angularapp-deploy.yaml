@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: angular-app-deployment
+  namespace: achat-app
+  labels:
+    app: angular-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: angular-app
+  template:
+    metadata:
+      labels:
+        app: angular-app
+    spec:
+      containers:
+      - name: angular-app
+        image: dockerdockerdhia/achat_front_prod
+        resources:
+          limits:
+            memory: "800Mi"
+            cpu: "0.2"
+          requests:
+            memory: "250Mi"
+            cpu: "0.1"
+        ports:
+        - containerPort: 80
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: angular-service
+  namespace: achat-app
+spec:
+  selector:
+    app: angular-app 
+  type: LoadBalancer  
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+
