@@ -11,11 +11,8 @@ pipeline {
 
     stages{
 
-
-
-          
-          //Build de l’image (spring + angular) +   Déposer les deux images sur DockerHub
-          stage("build and push back/front images"){
+         //Build de l’image (spring + angular) +   Déposer les deux images sur DockerHub
+          stage("build and push back image"){
 
                  steps{
 
@@ -27,11 +24,49 @@ pipeline {
          
                              sh "docker build -t $USER/achat_back_prod ${springF}/"
 
-                             sh "docker build -t $USER/achat_front_prod ${angularF}/"
-
                              sh "echo $PASS | docker login -u $USER --password-stdin"
 
                              sh "docker push $USER/achat_back_prod"
+
+                         }
+                 }
+            }
+         post{
+
+             always{
+                 sh "docker logout"
+             }
+        
+             success{
+                 echo "====++++push image execution success++++===="
+             }
+        
+             failure{
+                 echo "====++++push image execution failed++++===="
+             }
+    
+            }
+
+          }
+
+
+
+
+          
+          //Build de l’image (angular) +   Déposer l'image sur DockerHub
+          stage("build and push front images"){
+
+                 steps{
+
+                    script {
+            
+             echo "====++++executing build and push back + front images++++===="
+    
+          withCredentials([usernamePassword(credentialsId: 'dockerhub-cred', passwordVariable: 'PASS', usernameVariable: 'USER')]){
+         
+                             sh "docker build -t $USER/achat_front_prod ${angularF}/"
+
+                             sh "echo $PASS | docker login -u $USER --password-stdin"
 
                              sh "docker push $USER/achat_front_prod"
                          }
@@ -84,6 +119,8 @@ pipeline {
                     withCredentials([file(credentialsId: "${KUBECONFIG_CREDENTIAL}", variable: 'KUBECONFIG')]) {
                         // Set the KUBECONFIG environment variable to the kubeconfig file path
                         sh "export KUBECONFIG=${KUBECONFIG}"
+
+                        // Now you can use kubectl commands to interact with the Kubernetes cluster
                         sh "cd Manifests_k8s && kubectl delete -f angularapp-deploy.yaml"
                         sh "cd Manifests_k8s && kubectl apply -f angularapp-deploy.yaml"
                         
