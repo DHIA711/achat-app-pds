@@ -59,10 +59,8 @@ pipeline {
 
         
 
-                stage('Deploy spring to Kubernetes --prod') {
-            when {
-              branch 'master'
-              }
+                stage('Deploy spring to Kubernetes') {
+ 
             steps {
                 script {
                     // Load the kubeconfig credential
@@ -73,8 +71,6 @@ pipeline {
                         // Now you can use kubectl commands to interact with the Kubernetes cluster
                         sh "cd Manifests_k8s && kubectl delete -f springapp-deploy.yaml"
                         sh "cd Manifests_k8s && kubectl apply -f springapp-deploy.yaml"
-                        // sh "kubectl apply -f your_kubernetes_manifest.yaml"
-                        // Add more kubectl commands as needed
                     }
                 }
              }
@@ -87,10 +83,8 @@ pipeline {
                     // Load the kubeconfig credential
                     withCredentials([file(credentialsId: "${KUBECONFIG_CREDENTIAL}", variable: 'KUBECONFIG')]) {
                         // Set the KUBECONFIG environment variable to the kubeconfig file path
-                        //sh "export KUBECONFIG=${KUBECONFIG}"
-
-                        // Now you can use kubectl commands to interact with the Kubernetes cluster
-                        //sh "cd Manifests_k8s && kubectl delete -f angularapp-deploy.yaml"
+                        sh "export KUBECONFIG=${KUBECONFIG}"
+                        sh "cd Manifests_k8s && kubectl delete -f angularapp-deploy.yaml"
                         sh "cd Manifests_k8s && kubectl apply -f angularapp-deploy.yaml"
                         
                         // Add more kubectl commands as needed
