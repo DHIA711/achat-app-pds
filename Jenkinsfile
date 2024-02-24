@@ -10,8 +10,6 @@ pipeline {
           agent any
 
     stages{
-
-         //Build de l’image (spring + angular) +   Déposer les deux images sur DockerHub
           stage("build and push back image"){
 
                  steps{
@@ -53,7 +51,6 @@ pipeline {
 
 
           
-          //Build de l’image (angular) +   Déposer l'image sur DockerHub
           stage("build and push front images"){
 
                  steps{
@@ -98,12 +95,8 @@ pipeline {
  
             steps {
                 script {
-                    // Load the kubeconfig credential
                     withCredentials([file(credentialsId: "${KUBECONFIG_CREDENTIAL}", variable: 'KUBECONFIG')]) {
-                        // Set the KUBECONFIG environment variable to the kubeconfig file path
                         sh "export KUBECONFIG=${KUBECONFIG}"
-
-                        // Now you can use kubectl commands to interact with the Kubernetes cluster
                         sh "cd Manifests_k8s && kubectl delete -f springapp-deploy.yaml"
                         sh "cd Manifests_k8s && kubectl apply -f springapp-deploy.yaml"
                     }
@@ -115,16 +108,12 @@ pipeline {
  
             steps {
                 script {
-                    // Load the kubeconfig credential
                     withCredentials([file(credentialsId: "${KUBECONFIG_CREDENTIAL}", variable: 'KUBECONFIG')]) {
-                        // Set the KUBECONFIG environment variable to the kubeconfig file path
                         sh "export KUBECONFIG=${KUBECONFIG}"
 
-                        // Now you can use kubectl commands to interact with the Kubernetes cluster
                         sh "cd Manifests_k8s && kubectl delete -f angularapp-deploy.yaml"
                         sh "cd Manifests_k8s && kubectl apply -f angularapp-deploy.yaml"
                         
-                        // Add more kubectl commands as needed
                     }
                 }
             }

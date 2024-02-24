@@ -20,7 +20,7 @@ spec:
         image: dockerdockerdhia/achat_back_prod
         resources:
           limits:
-            memory: "800Mi"
+            memory: "700Mi"
             cpu: "0.4"
           requests:
             memory: "600Mi"
@@ -48,21 +48,4 @@ spec:
             configMapKeyRef:
               name: db-cm 
               key: db-name
-
----
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: spring-service
-  namespace: achat-app
-spec:
-  selector:
-    app: spring-app  
-  ports:
-    - protocol: TCP
-      port: 8089
-      targetPort: 8089
-
-
 
